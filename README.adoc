@@ -65,8 +65,14 @@ module.exports = require('@antora-supplemental/page-edit').adtVcsIconIdHelper
 <img src="{{{uiRootPath}}}/img/vcs/{{adt-vcs-icon-id page.origin.webUrl 'repo'}}.svg" alt="" />
 ----
 
+== Future
+
+Edit may later open **Antora Live** (DB-backed concurrent AsciiDoc authoring) when a hub configures a Live base URL, instead of — or in addition to — the forge edit URL.
+Until then, this package only bakes static VCS **View | Edit** links. See https://docs.antora-supplemental.org/docs/live-docs/[Live docs] and https://github.com/antora-supplemental/antora-live[antora-live].
+
 == Related
 
 * link:antora-registry.md[]
 * https://github.com/antora-supplemental/page-context[page-context]
 * https://github.com/antora-supplemental/valentus-theme[Valentus] (styles source-actions; does not own provider detection)
+* https://github.com/antora-supplemental/antora-live[antora-live] (planned Live editor target)

@@ -1,6 +1,6 @@
 {
   "name": "@antora-supplemental/page-edit",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Antora extension: bake View | Edit into the page-context lead table (no runtime icon JS)",
   "main": "lib/index.js",
   "exports": {
