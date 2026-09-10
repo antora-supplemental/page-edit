@@ -1,0 +1,45 @@
+{
+  "name": "@antora-supplemental/page-edit",
+  "version": "0.1.0",
+  "description": "Antora extension: bake Edit + VCS provider mark into the page-context lead zone (no runtime icon JS)",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./vcs-icon-id": "./lib/vcs-icon-id.js"
+  },
+  "files": [
+    "lib/**/*",
+    "icons/**/*",
+    "README.adoc",
+    "CHANGELOG.adoc",
+    "LICENSE",
+    "antora-registry.md"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "license": "MIT",
+  "keywords": [
+    "antora",
+    "antora-extension",
+    "edit",
+    "vcs",
+    "github",
+    "page-context"
+  ],
+  "homepage": "https://github.com/antora-supplemental/page-edit",
+  "bugs": {
+    "url": "https://github.com/antora-supplemental/page-edit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antora-supplemental/page-edit.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "peerDependencies": {
+    "@antora/site-generator": ">=3.1.0"
+  },
+  "packageManager": "pnpm@10.30.3"
+}

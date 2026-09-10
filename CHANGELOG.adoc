@@ -1,0 +1,6 @@
+= Changelog
+
+== 0.1.0 — 2026-09-09
+
+* Initial release: bake Edit + inline VCS provider SVG into the page-context lead zone on `pagesComposed`.
+* Export `vcsIconIdFromUrl` / `adtVcsIconIdHelper` for theme Handlebars helpers (header marks without runtime JS).
