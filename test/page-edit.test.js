@@ -108,13 +108,28 @@ describe('page-edit', () => {
     )
   })
 
-  it('prepends actions aside when no lead aside', () => {
+  it('prepends a lead Source panel when fragment has no lead aside', () => {
     const out = injectEditActions(
       '<p>Hi</p>',
       buildEditActionsHtml({ href: 'https://github.com/o/r/edit/main/a.adoc' })
     )
-    assert.match(out, /^<aside class="page-context page-context-actions"/)
+    assert.match(out, /^<aside class="page-context page-context-lead"/)
+    assert.match(out, /page-context-source-row/)
     assert.match(out, /<p>Hi<\/p>/)
+  })
+
+  it('inserts lead Source panel inside article on a full composed page (never before DOCTYPE)', () => {
+    const page =
+      '<!DOCTYPE html><html><body><header class="header">Nav</header>' +
+      '<article class="doc"><div class="adt-page-header"><h1 class="page">Home</h1></div>' +
+      '<p>Body</p></article></body></html>'
+    const actions = buildEditActionsHtml({ href: 'https://github.com/o/r/edit/main/a.adoc' })
+    const out = injectEditActions(page, actions, { iconId: 'github' })
+    assert.match(out, /^<!DOCTYPE html>/)
+    assert.doesNotMatch(out, /^<aside class="page-context/)
+    assert.match(out, /adt-page-header[\s\S]*page-context-lead[\s\S]*page-context-source-row/)
+    assert.match(out, /<p>Body<\/p>/)
+    assert.ok(out.indexOf('page-context-lead') > out.indexOf('class="header"'))
   })
 
   it('resolves editUrl over fileUri and respects private origins', () => {

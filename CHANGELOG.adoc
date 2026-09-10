@@ -1,5 +1,11 @@
 = Changelog
 
+== 0.2.3 — 2026-09-10
+
+* **Safe inject on composed pages:** Antora `pagesComposed` runs after UI compose, so `page.contents` is often a full HTML document. Never prepend View|Edit before `<!DOCTYPE>` / the top navbar.
+* When no lead exists, insert a `.page-context-lead` panel (Source row) inside `<article class="doc">` after the page header; fragments without a lead get the same lead shell prepended.
+* Pairs with page-context **0.6.4** component-home lead shell.
+
 == 0.2.2 — 2026-09-10
 
 * Document Future: Edit may target Antora Live when configured; clarify View | Edit remains forge links until then.

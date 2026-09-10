@@ -6,7 +6,7 @@
 :page-last-author: Cursor agent on behalf of Ryan Johnson
 :page-last-edited: 2026-09-10
 
-Injects **View | Edit** into the `@antora-supplemental/page-context` lead table as a **Source** row (or as a standalone actions aside when no lead exists). The VCS provider mark is chosen from the edit URL **at site build time** — no `site-vcs-icons.js` rewrite for Antora pages.
+Injects **View | Edit** into the `@antora-supplemental/page-context` lead table as a **Source** row (or creates a lead shell inside the article when no lead exists). The VCS provider mark is chosen from the edit URL **at site build time** — no `site-vcs-icons.js` rewrite for Antora pages.
 
 Also exports `vcsIconIdFromUrl` / `adtVcsIconIdHelper` for UI themes that want the same mapping in Handlebars (e.g. header repo button).
 
@@ -14,7 +14,7 @@ Also exports `vcsIconIdFromUrl` / `adtVcsIconIdHelper` for UI themes that want t
 
 [source,bash]
 ----
-pnpm add -D github:antora-supplemental/page-edit#v0.2.0
+pnpm add -D github:antora-supplemental/page-edit#v0.2.3
 ----
 
 == Playbook
@@ -41,7 +41,7 @@ antora:
 
 == Behavior
 
-* Runs on `pagesComposed`.
+* Runs on `pagesComposed` (after Antora UI compose — `page.contents` is often a full HTML document).
 * Uses Antora `src.editUrl` when present (and origin is not private, unless `forceShow` / `FORCE_SHOW_EDIT_PAGE_LINK`).
 * Falls back to `src.fileUri` for local previews when not in `CI` (Edit only — no View link for `file://`).
 * Markup: a lead-table row `<th class="page-context-source-key">{icon} Source</th><td><span class="page-context-source-actions">View | Edit</span></td>`.
@@ -49,6 +49,7 @@ antora:
 * View URL derived from Edit when possible: GitHub `/edit/` → `/blob/`, GitLab `/-/edit/` → `/-/blob/`.
 * Idempotent if `page-context-source-actions` or legacy `page-context-actions` is already present.
 * Preserves a lead `.page-context-byline` sibling outside `.page-context-panel` / `<table>`.
+* **Never** prepends markup before `<!DOCTYPE>` / the site header. Missing lead → insert a lead Source panel inside `<article class="doc">` (pairs with page-context **0.6.4** empty lead shell on component homes).
 
 == UI helper (optional)
 
