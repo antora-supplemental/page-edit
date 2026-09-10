@@ -1,12 +1,12 @@
 = page-edit
-:description: Antora extension that bakes an Edit control (with VCS provider mark) into the page-context lead zone at build time.
-:page-audience: Antora hub authors who want Edit beside page metadata without runtime icon JS
+:description: Antora extension that bakes View | Edit (with VCS provider mark) into the page-context lead table at build time.
+:page-audience: Antora hub authors who want source links beside page metadata without runtime icon JS
 :page-usage-context: Register under `antora.extensions` (pairs with page-context + a theme such as Valentus)
 :page-orig-author: Ryan Johnson
 :page-last-author: Cursor agent on behalf of Ryan Johnson
-:page-last-edited: 2026-09-09
+:page-last-edited: 2026-09-10
 
-Injects a baked **Edit** control into the `@antora-supplemental/page-context` lead panel (or as a standalone actions aside when no lead exists). The VCS provider mark is chosen from the edit URL **at site build time** — no `site-vcs-icons.js` rewrite for Antora pages.
+Injects **View | Edit** into the `@antora-supplemental/page-context` lead table as a **Source** row (or as a standalone actions aside when no lead exists). The VCS provider mark is chosen from the edit URL **at site build time** — no `site-vcs-icons.js` rewrite for Antora pages.
 
 Also exports `vcsIconIdFromUrl` / `adtVcsIconIdHelper` for UI themes that want the same mapping in Handlebars (e.g. header repo button).
 
@@ -14,7 +14,7 @@ Also exports `vcsIconIdFromUrl` / `adtVcsIconIdHelper` for UI themes that want t
 
 [source,bash]
 ----
-pnpm add -D github:antora-supplemental/page-edit#main
+pnpm add -D github:antora-supplemental/page-edit#v0.2.0
 ----
 
 == Playbook
@@ -43,9 +43,10 @@ antora:
 
 * Runs on `pagesComposed`.
 * Uses Antora `src.editUrl` when present (and origin is not private, unless `forceShow` / `FORCE_SHOW_EDIT_PAGE_LINK`).
-* Falls back to `src.fileUri` for local previews when not in `CI`.
-* Markup: `<aside class="page-context page-context-actions">…inline SVG… Edit</aside>` inserted as the first child of `.page-context-lead` when that aside exists.
-* Idempotent if `page-context-actions` is already present.
+* Falls back to `src.fileUri` for local previews when not in `CI` (Edit only — no View link for `file://`).
+* Markup: a lead-table row `<th>Source</th><td><span class="page-context-source-actions">View | Edit</span></td>`.
+* View URL derived from Edit when possible: GitHub `/edit/` → `/blob/`, GitLab `/-/edit/` → `/-/blob/`.
+* Idempotent if `page-context-source-actions` or legacy `page-context-actions` is already present.
 
 == UI helper (optional)
 
@@ -66,4 +67,4 @@ module.exports = require('@antora-supplemental/page-edit').adtVcsIconIdHelper
 
 * link:antora-registry.md[]
 * https://github.com/antora-supplemental/page-context[page-context]
-* https://github.com/antora-supplemental/valentus-theme[Valentus] (styles the actions row; does not own provider detection)
+* https://github.com/antora-supplemental/valentus-theme[Valentus] (styles source-actions; does not own provider detection)

@@ -1,7 +1,7 @@
 {
   "name": "@antora-supplemental/page-edit",
-  "version": "0.1.0",
-  "description": "Antora extension: bake Edit + VCS provider mark into the page-context lead zone (no runtime icon JS)",
+  "version": "0.2.0",
+  "description": "Antora extension: bake View | Edit into the page-context lead table (no runtime icon JS)",
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",

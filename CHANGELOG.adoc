@@ -1,5 +1,11 @@
 = Changelog
 
+== 0.2.0 — 2026-09-10
+
+* Inject **View | Edit** as a lead-table **Source** key/value row (not a floating actions aside inside the lead).
+* Derive View (blob) URLs from Edit URLs when possible (`/edit/` → `/blob/`, GitLab `/-/edit/` → `/-/blob/`).
+* Keep a legacy `.page-context-actions` aside only when no page-context lead exists.
+
 == 0.1.0 — 2026-09-09
 
 * Initial release: bake Edit + inline VCS provider SVG into the page-context lead zone on `pagesComposed`.
