@@ -6,6 +6,7 @@ const {
   vcsIconIdFromUrl,
   adtVcsIconIdHelper,
   buildEditActionsHtml,
+  buildSourceRowHtml,
   injectEditActions,
   resolveEditTarget,
   viewUrlFromEditUrl,
@@ -38,7 +39,7 @@ describe('page-edit', () => {
     assert.equal(adtVcsIconIdHelper('https://gitlab.com/a/b', 'repo'), 'gitlab')
   })
 
-  it('bakes View | Edit into source-actions HTML', () => {
+  it('bakes text-only View | Edit into source-actions HTML', () => {
     const html = buildEditActionsHtml({
       href: 'https://github.com/org/repo/edit/main/pages/index.adoc',
       iconId: 'github',
@@ -49,35 +50,62 @@ describe('page-edit', () => {
     assert.match(html, /\/blob\/main\/pages\/index\.adoc/)
     assert.match(html, />View</)
     assert.match(html, /data-vcs-provider="github"/)
-    assert.match(html, /<svg[^>]*class="adt-edit-vcs-svg"/)
-    assert.match(html, /currentColor/)
     assert.match(html, /Edit this page/)
+    assert.doesNotMatch(html, /adt-edit-vcs-svg/)
     assert.doesNotMatch(html, /site-vcs-icons/)
+    const viewIdx = html.indexOf('>View<')
+    const editIdx = html.indexOf('adt-edit-inline-link')
+    assert.ok(viewIdx > -1 && editIdx > viewIdx, 'View must precede Edit')
+  })
+
+  it('puts VCS icon on the Source key, not on Edit', () => {
+    const actions = buildEditActionsHtml({
+      href: 'https://github.com/org/repo/edit/main/pages/index.adoc',
+      iconId: 'github',
+    })
+    const row = buildSourceRowHtml(actions, { iconId: 'github' })
+    assert.match(row, /page-context-source-key/)
+    assert.match(row, /page-context-source-label">Source</)
+    assert.match(row, /<th[^>]*page-context-source-key[^>]*>[\s\S]*adt-edit-vcs-svg[\s\S]*Source/)
+    assert.doesNotMatch(row, /adt-edit-inline-link[\s\S]*adt-edit-vcs-svg/)
+    assert.match(row, /page-context-source-actions[\s\S]*>View</)
   })
 
   it('injects Source row into page-context-lead table', () => {
     const body =
       '<aside class="page-context page-context-lead" role="note">' +
+      '<p class="page-context-byline">Last updated</p>' +
+      '<div class="page-context-panel">' +
       '<table class="page-context-table"><tbody>' +
       '<tr><th scope="row">Audience</th><td>Readers</td></tr>' +
-      '</tbody></table></aside><p>Hi</p>'
+      '</tbody></table></div></aside><p>Hi</p>'
     const actions = buildEditActionsHtml({ href: 'https://github.com/o/r/edit/main/a.adoc' })
-    const out = injectEditActions(body, actions)
+    const out = injectEditActions(body, actions, { iconId: 'github' })
     assert.match(out, /page-context-source-row/)
-    assert.match(out, /<th scope="row">Source<\/th>/)
+    assert.match(out, /page-context-source-key/)
+    assert.match(out, /page-context-source-label">Source</)
     assert.match(out, /page-context-source-actions/)
     assert.match(out, /Audience/)
+    assert.match(out, /page-context-byline/)
+    const table = out.match(/<table class="page-context-table"[\s\S]*?<\/table>/)[0]
+    assert.doesNotMatch(table, /page-context-byline/)
+    assert.doesNotMatch(table, /Last updated/)
     assert.equal(injectEditActions(out, actions), out)
   })
 
-  it('adds a table when lead has byline but no table', () => {
+  it('adds a panel+table when lead has byline but no table', () => {
     const body =
       '<aside class="page-context page-context-lead" role="note">' +
       '<p class="page-context-byline">Last updated</p></aside>'
     const actions = buildEditActionsHtml({ href: 'https://github.com/o/r/edit/main/a.adoc' })
-    const out = injectEditActions(body, actions)
+    const out = injectEditActions(body, actions, { iconId: 'github' })
+    assert.match(out, /page-context-panel/)
     assert.match(out, /page-context-table/)
     assert.match(out, /Source/)
+    assert.match(
+      out,
+      /page-context-byline">Last updated<\/p><div class="page-context-panel">/
+    )
   })
 
   it('prepends actions aside when no lead aside', () => {

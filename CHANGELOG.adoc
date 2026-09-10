@@ -1,5 +1,11 @@
 = Changelog
 
+== 0.2.1 — 2026-09-10
+
+* Place the VCS provider mark on the **Source** key cell (before the label), not on the Edit link.
+* Value cell is text-only `View | Edit` (no icon on either link; View still before Edit).
+* When creating a lead table for a byline-only aside, wrap it in `.page-context-panel` so page-context lead nesting stays intact.
+
 == 0.2.0 — 2026-09-10
 
 * Inject **View | Edit** as a lead-table **Source** key/value row (not a floating actions aside inside the lead).
