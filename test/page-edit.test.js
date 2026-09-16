@@ -149,4 +149,20 @@ describe('page-edit', () => {
     assert.equal(resolveEditTarget(page, { isCi: true }), null)
     assert.equal(resolveEditTarget(page, { isCi: false }).href, page.src.fileUri)
   })
+  it('injects into empty component-home lead even when CSS names source-actions', () => {
+    const body =
+      '<aside class="page-context page-context-lead" role="note">' +
+      '<style type="text/css">.page-context-source-actions,.doc .page-context-source-actions{display:inline-flex}</style>' +
+      '<div class="page-context-panel">' +
+      '<table class="page-context-table"><tbody></tbody></table></div></aside>'
+    const actions = buildEditActionsHtml({
+      href: 'https://github.com/o/r/edit/main/modules/ROOT/pages/index.adoc',
+      iconId: 'github',
+    })
+    const out = injectEditActions(body, actions, { iconId: 'github' })
+    assert.match(out, /page-context-source-row/)
+    assert.match(out, /adt-view-inline-link/)
+    assert.match(out, /adt-edit-inline-link/)
+    assert.equal(injectEditActions(out, actions), out)
+  })
 })

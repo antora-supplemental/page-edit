@@ -1,5 +1,9 @@
 = Changelog
 
+== 0.2.4 - 2026-09-15
+
+* **Component-home Source row:** idempotency no longer treats page-context CSS class names (`.page-context-source-actions`) as an already-injected Source row. Empty lead shells on Antora component start pages get View | Edit again.
+
 == 0.2.3 — 2026-09-10
 
 * **Safe inject on composed pages:** Antora `pagesComposed` runs after UI compose, so `page.contents` is often a full HTML document. Never prepend View|Edit before `<!DOCTYPE>` / the top navbar.
