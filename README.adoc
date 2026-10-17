@@ -46,7 +46,7 @@ antora:
 * Falls back to `src.fileUri` for local previews when not in `CI` (Edit only — no View link for `file://`).
 * Markup: a lead-table row `<th class="page-context-source-key">{icon} Source</th><td><span class="page-context-source-actions">View | Edit</span></td>`.
 * The VCS provider mark lives on the **Source** key (not a button; does not replace the word). Value cell is plain text links only.
-* View URL derived from Edit when possible: GitHub `/edit/` → `/blob/`, GitLab `/-/edit/` → `/-/blob/`.
+* View URL derived from Edit when possible: GitHub `/edit/` → `/blob/`, GitLab `/-/edit/` → `/-/blob/`; when Antora supplies a blob URL (tag-pinned sources), Edit is derived the other way.
 * Idempotent if `page-context-source-actions` or legacy `page-context-actions` is already present.
 * Preserves a lead `.page-context-byline` sibling outside `.page-context-panel` / `<table>`.
 * **Never** prepends markup before `<!DOCTYPE>` / the site header. Missing lead → insert a lead Source panel inside `<article class="doc">` (pairs with page-context **0.6.4** empty lead shell on component homes).

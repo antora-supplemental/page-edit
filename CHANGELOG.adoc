@@ -1,5 +1,9 @@
 = Changelog
 
+== 0.2.5 - 2026-10-17
+
+* **Tag-pinned content sources:** when Antora sets `src.editUrl` to a forge **blob** URL (tags and other non-branch refs), derive **View** from that URL and point **Edit** at the matching `/edit/` (or GitLab `/-/edit/`) link so demo-pages and other tagged `demo-data` fixtures show View | Edit again.
+
 == 0.2.4 - 2026-09-15
 
 * **Component-home Source row:** idempotency no longer treats page-context CSS class names (`.page-context-source-actions`) as an already-injected Source row. Empty lead shells on Antora component start pages get View | Edit again.

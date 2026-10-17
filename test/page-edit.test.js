@@ -10,6 +10,7 @@ const {
   injectEditActions,
   resolveEditTarget,
   viewUrlFromEditUrl,
+  editUrlFromViewUrl,
 } = require('../lib/index.js')._internal
 
 describe('page-edit', () => {
@@ -32,6 +33,32 @@ describe('page-edit', () => {
       'https://gitlab.com/org/repo/-/blob/main/pages/index.adoc'
     )
     assert.equal(viewUrlFromEditUrl('file:///C:/code/x.adoc'), '')
+  })
+
+  it('derives Edit URLs from View (blob) URLs for tag-pinned Antora sources', () => {
+    assert.equal(
+      editUrlFromViewUrl(
+        'https://github.com/antora-supplemental/demo-data/blob/v0.3.5/docs/demo-pages/modules/ROOT/pages/admonitions.adoc'
+      ),
+      'https://github.com/antora-supplemental/demo-data/edit/v0.3.5/docs/demo-pages/modules/ROOT/pages/admonitions.adoc'
+    )
+    assert.equal(
+      editUrlFromViewUrl('https://gitlab.com/org/repo/-/blob/v1.0.0/pages/index.adoc'),
+      'https://gitlab.com/org/repo/-/edit/v1.0.0/pages/index.adoc'
+    )
+    assert.equal(editUrlFromViewUrl('file:///C:/code/x.adoc'), '')
+  })
+
+  it('bakes View | Edit when Antora supplies a blob URL in src.editUrl', () => {
+    const blob =
+      'https://github.com/antora-supplemental/demo-data/blob/v0.3.5/docs/demo-pages/modules/ROOT/pages/admonitions.adoc'
+    const html = buildEditActionsHtml({ href: blob, iconId: 'github' })
+    assert.match(html, /adt-view-inline-link[^>]+href="[^"]*\/blob\/v0\.3\.5\//)
+    assert.match(html, /adt-edit-inline-link[^>]+href="[^"]*\/edit\/v0\.3\.5\//)
+    assert.match(html, />View</)
+    const viewIdx = html.indexOf('>View<')
+    const editIdx = html.indexOf('adt-edit-inline-link')
+    assert.ok(viewIdx > -1 && editIdx > viewIdx, 'View must precede Edit')
   })
 
   it('Handlebars helper ignores options object as second arg', () => {
