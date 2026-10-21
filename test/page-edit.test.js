@@ -125,49 +125,49 @@ describe('page-edit', () => {
     inner +
     '</div></article></body></html>'
 
-  it('injects Source line at end of data-zone header when zoned', () => {
+  it('injects Source line before the title inside data-zone header when zoned', () => {
     const out = injectEditActions(composedZoned(`${leadAside}<p>Body</p>`), actions, { iconId: 'github' })
     const header = out.match(/<header[^>]*data-zone="header"[^>]*>([\s\S]*?)<\/header>/)?.[1] ?? ''
-    assert.match(header, /valentus-page-header[\s\S]*page-context-source-line/)
-    assert.doesNotMatch(header, /<\/header>/)
+    assert.match(header, /page-context-source-line[\s\S]*valentus-page-header/)
+    assert.doesNotMatch(header, /valentus-page-header[\s\S]*page-context-source-line/)
     assert.match(out, /data-zone="header"[\s\S]*page-context-source-line[\s\S]*<\/header>/)
     const body = out.match(/<div[^>]*data-zone="body"[^>]*>([\s\S]*?)<\/div>\s*<\/article>/)?.[1] ?? ''
     assert.doesNotMatch(body, /page-context-source-line/)
     assert.match(body, /page-context-lead/)
   })
 
-  it('puts Source line under the title, before the lead, never in the table', () => {
+  it('puts Source line above the title, before the lead, never in the table', () => {
     const out = injectEditActions(composed(`${leadAside}<p>Body</p>`), actions, { iconId: 'github' })
     assert.doesNotMatch(out, /page-context-source-row/)
     const table = out.match(/<table class="page-context-table"[\s\S]*?<\/table>/)[0]
     assert.doesNotMatch(table, /Source/)
     assert.match(table, /Audience/)
-    const iTitle = out.indexOf('</h1>')
     const iSource = out.indexOf('page-context-source-line')
+    const iTitleOpen = out.indexOf('valentus-page-header')
     const iLead = out.indexOf('page-context-lead')
-    assert.ok(iTitle > -1 && iSource > iTitle && iLead > iSource, 'title, Source, lead')
+    assert.ok(iSource > -1 && iTitleOpen > iSource && iLead > iTitleOpen, 'Source, title, lead')
     assert.equal(injectEditActions(out, actions), out)
   })
 
   it('uses the same placement when the page has no page-context lead', () => {
     const withLead = injectEditActions(composed(`${leadAside}<p>Body</p>`), actions)
     const noLead = injectEditActions(composed('<p>Body</p>'), actions)
-    const order = (s) => [s.indexOf('</h1>'), s.indexOf('page-context-source-line')]
+    const order = (s) => [s.indexOf('page-context-source-line'), s.indexOf('valentus-page-header')]
     for (const out of [withLead, noLead]) {
-      const [h, s] = order(out)
-      assert.ok(s > h, 'Source line must follow the title')
+      const [src, title] = order(out)
+      assert.ok(src > -1 && title > src, 'Source line must precede the title block')
     }
     assert.doesNotMatch(noLead, /page-context-lead/)
-    assert.match(noLead, /<\/h1>\s*<\/div><div class="page-context-source-line">[\s\S]*<p>Body<\/p>/)
+    assert.match(noLead, /<div class="page-context-source-line">[\s\S]*<div class="valentus-page-header">[\s\S]*<p>Body<\/p>/)
     assert.equal(injectEditActions(noLead, actions), noLead)
   })
 
   it('finds the title block for legacy adt-page-header and bare h1', () => {
     const legacy =
       '<article class="doc"><div class="adt-page-header"><h1>T</h1></div><p>x</p></article>'
-    assert.match(injectEditActions(legacy, actions), /<\/h1><\/div><div class="page-context-source-line">/)
+    assert.match(injectEditActions(legacy, actions), /<div class="page-context-source-line">[\s\S]*<div class="adt-page-header">/)
     const bare = '<article class="doc"><h1>T</h1><p>x</p></article>'
-    assert.match(injectEditActions(bare, actions), /<\/h1><div class="page-context-source-line">/)
+    assert.match(injectEditActions(bare, actions), /<div class="page-context-source-line">[\s\S]*<h1>T<\/h1>/)
     const none = '<article class="doc"><p>x</p></article>'
     assert.match(injectEditActions(none, actions), /<article class="doc"><div class="page-context-source-line">/)
   })
@@ -205,7 +205,7 @@ describe('page-edit', () => {
       '<style type="text/css">.page-context-source-actions,.page-context-source-line{display:inline-flex}</style>' +
       '<article class="doc"><div class="valentus-page-header"><h1>T</h1></div></article>'
     const out = injectEditActions(body, actions, { iconId: 'github' })
-    assert.match(out, /<div class="page-context-source-line">/)
+    assert.match(out, /<div class="page-context-source-line">[\s\S]*<div class="valentus-page-header">/)
     assert.match(out, /valentus-view-inline-link/)
     assert.equal(injectEditActions(out, actions), out)
   })

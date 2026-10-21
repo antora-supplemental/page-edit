@@ -1,5 +1,9 @@
 = Changelog
 
+== 0.3.3 - 2026-10-21
+
+* **Source above the title:** inject `.page-context-source-line` before `.valentus-page-header` / the first `<h1>` inside `[data-zone="header"]` (and the same order for flat `article.doc` regex fallbacks). Still never in the metadata table. Pairs with Valentus `.page-context-source-line` spacing above the title.
+
 == 0.3.2 - 2026-10-21
 
 * **Zoned articles:** inject the Source line at the end of `[data-zone="header"]` when the theme declares article zones; flat `article.doc` placement unchanged.
