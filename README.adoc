@@ -44,8 +44,8 @@ antora:
 * Runs on `pagesComposed` (after Antora UI compose — `page.contents` is often a full HTML document).
 * Uses Antora `src.editUrl` when present (and origin is not private, unless `forceShow` / `FORCE_SHOW_EDIT_PAGE_LINK`).
 * Falls back to `src.fileUri` for local previews when not in `CI` (Edit only — no View link for `file://`).
-* Markup: `<div class="page-context-source-line"><span class="page-context-source-key">{icon}<span class="page-context-source-label">Source:</span></span> <span class="page-context-source-actions">View | Edit</span></div>`.
-* The VCS provider mark lives on the **Source:** label (not a button; does not replace the word). View and Edit are plain text links only.
+* Markup: `<div class="page-context-source-line"><span class="page-context-source-key"><span class="page-context-source-label">Source:</span>{icon}</span> <span class="page-context-source-actions">View | Edit</span></div>`.
+* The VCS provider mark follows the **Source:** label (not a button; does not replace the word). View and Edit are plain text links only.
 * View URL derived from Edit when possible: GitHub `/edit/` → `/blob/`, GitLab `/-/edit/` → `/-/blob/`; when Antora supplies a blob URL (tag-pinned sources), Edit is derived the other way.
 * Idempotent if `page-context-source-actions` or legacy `page-context-actions` is already present.
 * Placement: after `.valentus-page-header` (or legacy `.adt-page-header`, else the first `<h1>`) inside `<article class="doc">`, so the order is title → Source line → byline → metadata table.

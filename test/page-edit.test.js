@@ -94,7 +94,7 @@ describe('page-edit', () => {
     assert.match(line, /^<div class="page-context-source-line">/)
     assert.match(line, /page-context-source-key/)
     assert.match(line, /page-context-source-label">Source:</)
-    assert.match(line, /page-context-source-key[^>]*>[\s\S]*valentus-edit-vcs-svg[\s\S]*Source:/)
+    assert.match(line, /page-context-source-key[^>]*>[\s\S]*Source:[\s\S]*valentus-edit-vcs-svg/)
     assert.doesNotMatch(line, /valentus-edit-inline-link[\s\S]*valentus-edit-vcs-svg/)
     assert.doesNotMatch(line, /<tr|<th|<td|<table/)
     assert.match(line, /page-context-source-actions[\s\S]*>View</)
