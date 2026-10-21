@@ -53,11 +53,11 @@ describe('page-edit', () => {
     const blob =
       'https://github.com/antora-supplemental/demo-data/blob/v0.3.5/docs/demo-pages/modules/ROOT/pages/admonitions.adoc'
     const html = buildEditActionsHtml({ href: blob, iconId: 'github' })
-    assert.match(html, /adt-view-inline-link[^>]+href="[^"]*\/blob\/v0\.3\.5\//)
-    assert.match(html, /adt-edit-inline-link[^>]+href="[^"]*\/edit\/v0\.3\.5\//)
+    assert.match(html, /valentus-view-inline-link[^>]+href="[^"]*\/blob\/v0\.3\.5\//)
+    assert.match(html, /valentus-edit-inline-link[^>]+href="[^"]*\/edit\/v0\.3\.5\//)
     assert.match(html, />View</)
     const viewIdx = html.indexOf('>View<')
-    const editIdx = html.indexOf('adt-edit-inline-link')
+    const editIdx = html.indexOf('valentus-edit-inline-link')
     assert.ok(viewIdx > -1 && editIdx > viewIdx, 'View must precede Edit')
   })
 
@@ -72,16 +72,16 @@ describe('page-edit', () => {
       iconId: 'github',
     })
     assert.match(html, /page-context-source-actions/)
-    assert.match(html, /adt-view-inline-link/)
-    assert.match(html, /adt-edit-inline-link/)
+    assert.match(html, /valentus-view-inline-link/)
+    assert.match(html, /valentus-edit-inline-link/)
     assert.match(html, /\/blob\/main\/pages\/index\.adoc/)
     assert.match(html, />View</)
     assert.match(html, /data-vcs-provider="github"/)
     assert.match(html, /Edit this page/)
-    assert.doesNotMatch(html, /adt-edit-vcs-svg/)
+    assert.doesNotMatch(html, /valentus-edit-vcs-svg/)
     assert.doesNotMatch(html, /site-vcs-icons/)
     const viewIdx = html.indexOf('>View<')
-    const editIdx = html.indexOf('adt-edit-inline-link')
+    const editIdx = html.indexOf('valentus-edit-inline-link')
     assert.ok(viewIdx > -1 && editIdx > viewIdx, 'View must precede Edit')
   })
 
@@ -93,8 +93,8 @@ describe('page-edit', () => {
     const row = buildSourceRowHtml(actions, { iconId: 'github' })
     assert.match(row, /page-context-source-key/)
     assert.match(row, /page-context-source-label">Source</)
-    assert.match(row, /<th[^>]*page-context-source-key[^>]*>[\s\S]*adt-edit-vcs-svg[\s\S]*Source/)
-    assert.doesNotMatch(row, /adt-edit-inline-link[\s\S]*adt-edit-vcs-svg/)
+    assert.match(row, /<th[^>]*page-context-source-key[^>]*>[\s\S]*valentus-edit-vcs-svg[\s\S]*Source/)
+    assert.doesNotMatch(row, /valentus-edit-inline-link[\s\S]*valentus-edit-vcs-svg/)
     assert.match(row, /page-context-source-actions[\s\S]*>View</)
   })
 
@@ -148,13 +148,13 @@ describe('page-edit', () => {
   it('inserts lead Source panel inside article on a full composed page (never before DOCTYPE)', () => {
     const page =
       '<!DOCTYPE html><html><body><header class="header">Nav</header>' +
-      '<article class="doc"><div class="adt-page-header"><h1 class="page">Home</h1></div>' +
+      '<article class="doc"><div class="valentus-page-header"><h1 class="page">Home</h1></div>' +
       '<p>Body</p></article></body></html>'
     const actions = buildEditActionsHtml({ href: 'https://github.com/o/r/edit/main/a.adoc' })
     const out = injectEditActions(page, actions, { iconId: 'github' })
     assert.match(out, /^<!DOCTYPE html>/)
     assert.doesNotMatch(out, /^<aside class="page-context/)
-    assert.match(out, /adt-page-header[\s\S]*page-context-lead[\s\S]*page-context-source-row/)
+    assert.match(out, /valentus-page-header[\s\S]*page-context-lead[\s\S]*page-context-source-row/)
     assert.match(out, /<p>Body<\/p>/)
     assert.ok(out.indexOf('page-context-lead') > out.indexOf('class="header"'))
   })
@@ -188,8 +188,8 @@ describe('page-edit', () => {
     })
     const out = injectEditActions(body, actions, { iconId: 'github' })
     assert.match(out, /page-context-source-row/)
-    assert.match(out, /adt-view-inline-link/)
-    assert.match(out, /adt-edit-inline-link/)
+    assert.match(out, /valentus-view-inline-link/)
+    assert.match(out, /valentus-edit-inline-link/)
     assert.equal(injectEditActions(out, actions), out)
   })
 })

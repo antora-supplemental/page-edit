@@ -53,7 +53,7 @@ antora:
 
 == UI helper (optional)
 
-Themes may re-export the helper into `helpers/adt-vcs-icon-id.js`:
+Themes may re-export the helper into `helpers/valentus-vcs-icon-id.js`:
 
 [source,js]
 ----
@@ -63,7 +63,7 @@ module.exports = require('@antora-supplemental/page-edit').adtVcsIconIdHelper
 
 [source,hbs]
 ----
-<img src="{{{uiRootPath}}}/img/vcs/{{adt-vcs-icon-id page.origin.webUrl 'repo'}}.svg" alt="" />
+<img src="{{{uiRootPath}}}/img/vcs/{{valentus-vcs-icon-id page.origin.webUrl 'repo'}}.svg" alt="" />
 ----
 
 == Future
