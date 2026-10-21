@@ -6,7 +6,7 @@
 * **One placement everywhere:** pages with and without a page-context lead get the same order (title, Source line, byline, metadata table). Fixes Source appearing above the title on pages without a lead: placement was keyed on `adt-page-header`, so the renamed `valentus-page-header` fell through to "right after `<article>`".
 * Title block detection accepts `valentus-page-header` and legacy `adt-page-header`, and falls back to the first `<h1>`.
 * Removed `buildSourceRowHtml` / `buildLeadSourcePanelHtml` (replaced by `buildSourceLineHtml`). Still idempotent against already-baked rows, lines, and legacy actions asides.
-* Pairs with page-context **0.8.0** (no empty component-home lead shell) and Valentus `.page-context-source-line` styles.
+* Pairs with page-context **0.7.1** (no empty component-home lead shell) and Valentus `.page-context-source-line` styles.
 
 == 0.2.5 - 2026-10-17
 
