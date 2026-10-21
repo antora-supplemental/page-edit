@@ -1,5 +1,9 @@
 = Changelog
 
+== 0.3.2 - 2026-10-21
+
+* **Zoned articles:** inject the Source line at the end of `[data-zone="header"]` when the theme declares article zones; flat `article.doc` placement unchanged.
+
 == 0.3.1 - 2026-10-21
 
 * **Source line order:** `.page-context-source-key` is now `Source:` text, then the VCS mark, then View | Edit (was icon before the label).

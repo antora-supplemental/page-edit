@@ -114,6 +114,28 @@ describe('page-edit', () => {
     inner +
     '</article></body></html>'
 
+  const composedZoned = (inner) =>
+    '<!DOCTYPE html><html><body><header class="header">Nav</header>' +
+    '<article class="doc" data-zone-root>' +
+    '<header class="doc-zone doc-zone--header" data-zone="header">' +
+    '<div class="valentus-page-header"><h1 class="page valentus-page-title">Home</h1></div>' +
+    '</header>' +
+    '<div class="doc-zone doc-zone--meta" data-zone="meta"></div>' +
+    '<div class="doc-zone doc-zone--body" data-zone="body">' +
+    inner +
+    '</div></article></body></html>'
+
+  it('injects Source line at end of data-zone header when zoned', () => {
+    const out = injectEditActions(composedZoned(`${leadAside}<p>Body</p>`), actions, { iconId: 'github' })
+    const header = out.match(/<header[^>]*data-zone="header"[^>]*>([\s\S]*?)<\/header>/)?.[1] ?? ''
+    assert.match(header, /valentus-page-header[\s\S]*page-context-source-line/)
+    assert.doesNotMatch(header, /<\/header>/)
+    assert.match(out, /data-zone="header"[\s\S]*page-context-source-line[\s\S]*<\/header>/)
+    const body = out.match(/<div[^>]*data-zone="body"[^>]*>([\s\S]*?)<\/div>\s*<\/article>/)?.[1] ?? ''
+    assert.doesNotMatch(body, /page-context-source-line/)
+    assert.match(body, /page-context-lead/)
+  })
+
   it('puts Source line under the title, before the lead, never in the table', () => {
     const out = injectEditActions(composed(`${leadAside}<p>Body</p>`), actions, { iconId: 'github' })
     assert.doesNotMatch(out, /page-context-source-row/)
