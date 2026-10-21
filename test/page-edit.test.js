@@ -6,7 +6,7 @@ const {
   vcsIconIdFromUrl,
   adtVcsIconIdHelper,
   buildEditActionsHtml,
-  buildSourceRowHtml,
+  buildSourceLineHtml,
   injectEditActions,
   resolveEditTarget,
   viewUrlFromEditUrl,
@@ -85,80 +85,82 @@ describe('page-edit', () => {
     assert.ok(viewIdx > -1 && editIdx > viewIdx, 'View must precede Edit')
   })
 
-  it('puts VCS icon on the Source key, not on Edit', () => {
+  it('puts VCS icon on the Source label, not on Edit', () => {
     const actions = buildEditActionsHtml({
       href: 'https://github.com/org/repo/edit/main/pages/index.adoc',
       iconId: 'github',
     })
-    const row = buildSourceRowHtml(actions, { iconId: 'github' })
-    assert.match(row, /page-context-source-key/)
-    assert.match(row, /page-context-source-label">Source</)
-    assert.match(row, /<th[^>]*page-context-source-key[^>]*>[\s\S]*valentus-edit-vcs-svg[\s\S]*Source/)
-    assert.doesNotMatch(row, /valentus-edit-inline-link[\s\S]*valentus-edit-vcs-svg/)
-    assert.match(row, /page-context-source-actions[\s\S]*>View</)
+    const line = buildSourceLineHtml(actions, { iconId: 'github' })
+    assert.match(line, /^<div class="page-context-source-line">/)
+    assert.match(line, /page-context-source-key/)
+    assert.match(line, /page-context-source-label">Source:</)
+    assert.match(line, /page-context-source-key[^>]*>[\s\S]*valentus-edit-vcs-svg[\s\S]*Source:/)
+    assert.doesNotMatch(line, /valentus-edit-inline-link[\s\S]*valentus-edit-vcs-svg/)
+    assert.doesNotMatch(line, /<tr|<th|<td|<table/)
+    assert.match(line, /page-context-source-actions[\s\S]*>View</)
   })
 
-  it('injects Source row into page-context-lead table', () => {
-    const body =
-      '<aside class="page-context page-context-lead" role="note">' +
-      '<p class="page-context-byline">Last updated</p>' +
-      '<div class="page-context-panel">' +
-      '<table class="page-context-table"><tbody>' +
-      '<tr><th scope="row">Audience</th><td>Readers</td></tr>' +
-      '</tbody></table></div></aside><p>Hi</p>'
-    const actions = buildEditActionsHtml({ href: 'https://github.com/o/r/edit/main/a.adoc' })
-    const out = injectEditActions(body, actions, { iconId: 'github' })
-    assert.match(out, /page-context-source-row/)
-    assert.match(out, /page-context-source-key/)
-    assert.match(out, /page-context-source-label">Source</)
-    assert.match(out, /page-context-source-actions/)
-    assert.match(out, /Audience/)
-    assert.match(out, /page-context-byline/)
+  const actions = buildEditActionsHtml({ href: 'https://github.com/o/r/edit/main/a.adoc' })
+  const leadAside =
+    '<aside class="page-context page-context-lead" role="note">' +
+    '<p class="page-context-byline">Last updated</p>' +
+    '<div class="page-context-panel">' +
+    '<table class="page-context-table"><tbody>' +
+    '<tr><th scope="row">Audience</th><td>Readers</td></tr>' +
+    '</tbody></table></div></aside>'
+  const composed = (inner) =>
+    '<!DOCTYPE html><html><body><header class="header">Nav</header>' +
+    '<article class="doc"><div class="valentus-page-header">\n  <h1 class="page valentus-page-title">Home</h1>\n</div>' +
+    inner +
+    '</article></body></html>'
+
+  it('puts Source line under the title, before the lead, never in the table', () => {
+    const out = injectEditActions(composed(`${leadAside}<p>Body</p>`), actions, { iconId: 'github' })
+    assert.doesNotMatch(out, /page-context-source-row/)
     const table = out.match(/<table class="page-context-table"[\s\S]*?<\/table>/)[0]
-    assert.doesNotMatch(table, /page-context-byline/)
-    assert.doesNotMatch(table, /Last updated/)
+    assert.doesNotMatch(table, /Source/)
+    assert.match(table, /Audience/)
+    const iTitle = out.indexOf('</h1>')
+    const iSource = out.indexOf('page-context-source-line')
+    const iLead = out.indexOf('page-context-lead')
+    assert.ok(iTitle > -1 && iSource > iTitle && iLead > iSource, 'title, Source, lead')
     assert.equal(injectEditActions(out, actions), out)
   })
 
-  it('adds a panel+table when lead has byline but no table', () => {
-    const body =
-      '<aside class="page-context page-context-lead" role="note">' +
-      '<p class="page-context-byline">Last updated</p></aside>'
-    const actions = buildEditActionsHtml({ href: 'https://github.com/o/r/edit/main/a.adoc' })
-    const out = injectEditActions(body, actions, { iconId: 'github' })
-    assert.match(out, /page-context-panel/)
-    assert.match(out, /page-context-table/)
-    assert.match(out, /Source/)
-    assert.match(
-      out,
-      /page-context-byline">Last updated<\/p><div class="page-context-panel">/
-    )
+  it('uses the same placement when the page has no page-context lead', () => {
+    const withLead = injectEditActions(composed(`${leadAside}<p>Body</p>`), actions)
+    const noLead = injectEditActions(composed('<p>Body</p>'), actions)
+    const order = (s) => [s.indexOf('</h1>'), s.indexOf('page-context-source-line')]
+    for (const out of [withLead, noLead]) {
+      const [h, s] = order(out)
+      assert.ok(s > h, 'Source line must follow the title')
+    }
+    assert.doesNotMatch(noLead, /page-context-lead/)
+    assert.match(noLead, /<\/h1>\s*<\/div><div class="page-context-source-line">[\s\S]*<p>Body<\/p>/)
+    assert.equal(injectEditActions(noLead, actions), noLead)
   })
 
-  it('prepends a lead Source panel when fragment has no lead aside', () => {
-    const out = injectEditActions(
-      '<p>Hi</p>',
-      buildEditActionsHtml({ href: 'https://github.com/o/r/edit/main/a.adoc' })
-    )
-    assert.match(out, /^<aside class="page-context page-context-lead"/)
-    assert.match(out, /page-context-source-row/)
+  it('finds the title block for legacy adt-page-header and bare h1', () => {
+    const legacy =
+      '<article class="doc"><div class="adt-page-header"><h1>T</h1></div><p>x</p></article>'
+    assert.match(injectEditActions(legacy, actions), /<\/h1><\/div><div class="page-context-source-line">/)
+    const bare = '<article class="doc"><h1>T</h1><p>x</p></article>'
+    assert.match(injectEditActions(bare, actions), /<\/h1><div class="page-context-source-line">/)
+    const none = '<article class="doc"><p>x</p></article>'
+    assert.match(injectEditActions(none, actions), /<article class="doc"><div class="page-context-source-line">/)
+  })
+
+  it('prepends the Source line to a fragment without article', () => {
+    const out = injectEditActions('<p>Hi</p>', actions)
+    assert.match(out, /^<div class="page-context-source-line">/)
     assert.match(out, /<p>Hi<\/p>/)
   })
 
-  it('inserts lead Source panel inside article on a full composed page (never before DOCTYPE)', () => {
-    const page =
-      '<!DOCTYPE html><html><body><header class="header">Nav</header>' +
-      '<article class="doc"><div class="valentus-page-header"><h1 class="page">Home</h1></div>' +
-      '<p>Body</p></article></body></html>'
-    const actions = buildEditActionsHtml({ href: 'https://github.com/o/r/edit/main/a.adoc' })
-    const out = injectEditActions(page, actions, { iconId: 'github' })
+  it('never inserts before DOCTYPE on a full composed page', () => {
+    const out = injectEditActions(composed('<p>Body</p>'), actions, { iconId: 'github' })
     assert.match(out, /^<!DOCTYPE html>/)
-    assert.doesNotMatch(out, /^<aside class="page-context/)
-    assert.match(out, /valentus-page-header[\s\S]*page-context-lead[\s\S]*page-context-source-row/)
-    assert.match(out, /<p>Body<\/p>/)
-    assert.ok(out.indexOf('page-context-lead') > out.indexOf('class="header"'))
+    assert.ok(out.indexOf('page-context-source-line') > out.indexOf('class="header"'))
   })
-
   it('resolves editUrl over fileUri and respects private origins', () => {
     const page = {
       src: {
@@ -176,20 +178,13 @@ describe('page-edit', () => {
     assert.equal(resolveEditTarget(page, { isCi: true }), null)
     assert.equal(resolveEditTarget(page, { isCi: false }).href, page.src.fileUri)
   })
-  it('injects into empty component-home lead even when CSS names source-actions', () => {
+  it('injects despite CSS that names source-actions', () => {
     const body =
-      '<aside class="page-context page-context-lead" role="note">' +
-      '<style type="text/css">.page-context-source-actions,.doc .page-context-source-actions{display:inline-flex}</style>' +
-      '<div class="page-context-panel">' +
-      '<table class="page-context-table"><tbody></tbody></table></div></aside>'
-    const actions = buildEditActionsHtml({
-      href: 'https://github.com/o/r/edit/main/modules/ROOT/pages/index.adoc',
-      iconId: 'github',
-    })
+      '<style type="text/css">.page-context-source-actions,.page-context-source-line{display:inline-flex}</style>' +
+      '<article class="doc"><div class="valentus-page-header"><h1>T</h1></div></article>'
     const out = injectEditActions(body, actions, { iconId: 'github' })
-    assert.match(out, /page-context-source-row/)
+    assert.match(out, /<div class="page-context-source-line">/)
     assert.match(out, /valentus-view-inline-link/)
-    assert.match(out, /valentus-edit-inline-link/)
     assert.equal(injectEditActions(out, actions), out)
   })
 })

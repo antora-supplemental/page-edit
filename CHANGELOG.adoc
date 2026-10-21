@@ -1,5 +1,13 @@
 = Changelog
 
+== 0.3.0 - 2026-10-21
+
+* **Source line under the title:** View | Edit is now a `.page-context-source-line` (VCS mark + `Source:` + links) inserted directly after the page title block, before the page-context lead. It is no longer a `.page-context-source-row` in the metadata table.
+* **One placement everywhere:** pages with and without a page-context lead get the same order (title, Source line, byline, metadata table). Fixes Source appearing above the title on pages without a lead: placement was keyed on `adt-page-header`, so the renamed `valentus-page-header` fell through to "right after `<article>`".
+* Title block detection accepts `valentus-page-header` and legacy `adt-page-header`, and falls back to the first `<h1>`.
+* Removed `buildSourceRowHtml` / `buildLeadSourcePanelHtml` (replaced by `buildSourceLineHtml`). Still idempotent against already-baked rows, lines, and legacy actions asides.
+* Pairs with page-context **0.8.0** (no empty component-home lead shell) and Valentus `.page-context-source-line` styles.
+
 == 0.2.5 - 2026-10-17
 
 * **Tag-pinned content sources:** when Antora sets `src.editUrl` to a forge **blob** URL (tags and other non-branch refs), derive **View** from that URL and point **Edit** at the matching `/edit/` (or GitLab `/-/edit/`) link so demo-pages and other tagged `demo-data` fixtures show View | Edit again.

@@ -1,12 +1,12 @@
 = page-edit
-:description: Antora extension that bakes View | Edit (with VCS provider mark) into the page-context lead table at build time.
+:description: Antora extension that bakes a Source line (View | Edit, with VCS provider mark) directly under the page title at build time.
 :page-audience: Antora hub authors who want source links beside page metadata without runtime icon JS
 :page-usage-context: Register under `antora.extensions` (pairs with page-context + a theme such as Valentus)
 :page-orig-author: Ryan Johnson
 :page-last-author: Cursor agent on behalf of Ryan Johnson
 :page-last-edited: 2026-09-10
 
-Injects **View | Edit** into the `@antora-supplemental/page-context` lead table as a **Source** row (or creates a lead shell inside the article when no lead exists). The VCS provider mark is chosen from the edit URL **at site build time** — no `site-vcs-icons.js` rewrite for Antora pages.
+Injects a **Source: View | Edit** line directly under the page title, before the @antora-supplemental/page-context lead (byline + metadata table). The line is never a metadata-table row, and placement is the same on every page, whether or not it has a lead. The VCS provider mark is chosen from the edit URL **at site build time** — no `site-vcs-icons.js` rewrite for Antora pages.
 
 Also exports `vcsIconIdFromUrl` / `adtVcsIconIdHelper` for UI themes that want the same mapping in Handlebars (e.g. header repo button).
 
@@ -44,12 +44,12 @@ antora:
 * Runs on `pagesComposed` (after Antora UI compose — `page.contents` is often a full HTML document).
 * Uses Antora `src.editUrl` when present (and origin is not private, unless `forceShow` / `FORCE_SHOW_EDIT_PAGE_LINK`).
 * Falls back to `src.fileUri` for local previews when not in `CI` (Edit only — no View link for `file://`).
-* Markup: a lead-table row `<th class="page-context-source-key">{icon} Source</th><td><span class="page-context-source-actions">View | Edit</span></td>`.
-* The VCS provider mark lives on the **Source** key (not a button; does not replace the word). Value cell is plain text links only.
+* Markup: `<div class="page-context-source-line"><span class="page-context-source-key">{icon}<span class="page-context-source-label">Source:</span></span> <span class="page-context-source-actions">View | Edit</span></div>`.
+* The VCS provider mark lives on the **Source:** label (not a button; does not replace the word). View and Edit are plain text links only.
 * View URL derived from Edit when possible: GitHub `/edit/` → `/blob/`, GitLab `/-/edit/` → `/-/blob/`; when Antora supplies a blob URL (tag-pinned sources), Edit is derived the other way.
 * Idempotent if `page-context-source-actions` or legacy `page-context-actions` is already present.
-* Preserves a lead `.page-context-byline` sibling outside `.page-context-panel` / `<table>`.
-* **Never** prepends markup before `<!DOCTYPE>` / the site header. Missing lead → insert a lead Source panel inside `<article class="doc">` (pairs with page-context **0.6.4** empty lead shell on component homes).
+* Placement: after `.valentus-page-header` (or legacy `.adt-page-header`, else the first `<h1>`) inside `<article class="doc">`, so the order is title → Source line → byline → metadata table.
+* **Never** prepends markup before `<!DOCTYPE>` / the site header. Fragments without an article get the Source line prepended (the theme renders the title above `page.contents`).
 
 == UI helper (optional)
 
